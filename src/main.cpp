@@ -80,8 +80,8 @@ int main(int, char*[])
 
     SolutionOpt s_opt;
     SolutionKlein s_klein;
-    float cost_klein = s_klein.klein_solution(g);
-    float cost_opt = s_opt.optimal_solution(g);
+    float cost_klein = static_cast<float>(s_klein.klein_solution(g));
+    float cost_opt = static_cast<float>(s_opt.optimal_solution(g));
     if (cost_opt > 0) {
         std::cout << "approximation ratio: " << cost_klein / cost_opt << std::endl;
     }
