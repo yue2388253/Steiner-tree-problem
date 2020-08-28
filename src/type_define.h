@@ -7,6 +7,7 @@
 
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <limits>
 
 using namespace boost;
 
@@ -25,5 +26,7 @@ typedef property<edge_weight_t, unsigned int> EdgeProperty;
 typedef adjacency_list<vecS, vecS, undirectedS, VertexProperty, EdgeProperty> Graph;
 typedef graph_traits<Graph>::vertex_descriptor Vertex;
 typedef graph_traits<Graph>::edge_descriptor Edge;
+
+const float FLOAT_MAX = std::numeric_limits<float>::max();
 
 #endif //STEINERTREE_TYPE_DEFINE_H

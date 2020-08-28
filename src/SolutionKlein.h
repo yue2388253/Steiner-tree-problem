@@ -21,11 +21,11 @@ public:
         vector<int> trees_to_be_merged;
         vector<int> new_nodes;
 
-        Result(unsigned int c, vector<int> t, vector<int> n):
+        Result(float c, vector<int> t, vector<int> n):
                 cost(c), trees_to_be_merged(std::move(t)), new_nodes(std::move(n)) {};
     };
 
-    unsigned int klein_solution(const Graph& g);
+    float klein_solution(const Graph& g);
     Result calculate_min_cost(int node_index, const vector<vector<int>>& trees, const Graph& g);
     Result calculate_cost(int node_index, const vector<vector<int>>& trees,
                           const vector<int>& indies, const Graph& g,

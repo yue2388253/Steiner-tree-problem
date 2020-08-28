@@ -65,9 +65,11 @@ void access_graph_data (Graph g) {
 
     std::cout << "edges(g) = ";
     graph_traits<Graph>::edge_iterator ei, ei_end;
+    auto edge_weights = get(edge_weight_t(), g);
     for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
-        std::cout << "(" << index[source(*ei, g)]
-                  << "," << index[target(*ei, g)] << ") ";
+        std::cout << "[(" << index[source(*ei, g)]
+                  << "," << index[target(*ei, g)] << ") "
+                  << edge_weights[*ei] << "], ";
     std::cout << std::endl;
 }
 
@@ -76,7 +78,7 @@ int main(int, char*[])
     Graph g = create_graph();
 
     // demonstrate how to access the data of the graph and print the graph
-    // access_graph_data(g);
+    access_graph_data(g);
 
     SolutionOpt s_opt;
     SolutionKlein s_klein;
