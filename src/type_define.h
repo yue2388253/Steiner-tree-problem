@@ -23,5 +23,7 @@ typedef property<edge_weight_t, unsigned int> EdgeProperty;
 
 // define graph structure.
 typedef adjacency_list<vecS, vecS, undirectedS, VertexProperty, EdgeProperty> Graph;
+typedef graph_traits<Graph>::vertex_descriptor Vertex;
+typedef graph_traits<Graph>::edge_descriptor Edge;
 
 #endif //STEINERTREE_TYPE_DEFINE_H

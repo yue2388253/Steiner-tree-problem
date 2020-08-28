@@ -59,7 +59,6 @@ unsigned int SolutionKlein::klein_solution(const Graph& g) {
     return res;
 }
 
-// TODO: Calculate the quotient cost of node |node_index|
 // Note that node |node_index| might be in the trees.
 SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const vector<vector<int>>& trees, const Graph& g) {
     std::unordered_map<int, int> node2tree_index;
@@ -88,9 +87,13 @@ SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const ve
         subsets_vec = SolutionKlein::generate_subsets(trees_index, 2);
     }
 
+    std::vector<int> d(num_vertices(g));
+    vector<Vertex> p(num_vertices(g), graph_traits<Graph>::null_vertex()); //the predecessor array
+    dijkstra_shortest_paths(g, node_index, distance_map(&d[0]).
+            visitor(make_predecessor_recorder(&p[0])));
     SolutionKlein::Result res(UINT16_MAX, {}, {});
-    for (auto& indies: subsets_vec) {
-        auto local = calculate_cost(node_index, trees, indies, g);
+    for (const auto& indies: subsets_vec) {
+        auto local = calculate_cost(node_index, trees, indies, g, d, p);
         if (local.cost < res.cost) {
             res = local;
         }
@@ -100,14 +103,39 @@ SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const ve
     return res;
 }
 
+// TODO:
 // Note that indies.size() may be 1 since node |node_index| is in trees
-SolutionKlein::Result calculate_cost(int node_index, const vector<vector<int>>& trees, const vector<int>& indies, const Graph& g) {
+SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector<vector<int>>& trees,
+                                                    const vector<int>& indies, const Graph& g,
+                                                    const vector<int>& distance_map, const vector<Vertex>& predecessor) {
+    SolutionKlein::Result res(UINT16_MAX, {}, {});
 
-    return SolutionKlein::Result(1, {}, {});
+    int num_trees = indies.size();
+    auto v_weights = get(vertex_weight_t(), g);
+    unsigned int node_weight = v_weights[node_index];
+    vector<int> distances(num_trees, UINT16_MAX);
+    for (int i = 0; i < num_trees; ++i) {
+        int& distance = distances[i];
+        for (int target_node_index: trees[indies[i]]) {
+            if (distance_map[target_node_index] < distance) {
+                distance = distance_map[target_node_index];
+            }
+        }
+        assert(distance != UINT16_MAX);
+    }
+    unsigned int distances2trees = 0;
+    for (int i = 0; i < num_trees; ++i) {
+        distances2trees += distances[i];
+    }
+    res.cost = static_cast<float>(node_weight + distances2trees) / static_cast<float>(num_trees);
+
+    // TODO: modify the remaining members of res
+
+    return res;
 }
 
 // TODO: to be optimized. Tip: using dynamic programming can help.
-vector<vector<int>> SolutionKlein::generate_subsets(const vector<int>& indies, int min_num = 2) {
+vector<vector<int>> SolutionKlein::generate_subsets(const vector<int>& indies, int min_num) {
     vector<vector<int>> res;
     for (int i = min_num; i <= indies.size(); ++i) {
          auto r = SolutionKlein::generate_subsets_helper(indies, i);
