@@ -25,7 +25,11 @@ public:
     };
 
     unsigned int klein_solution(const Graph& g);
-    Result calculate_cost(int node_index, vector<vector<int>> trees, const Graph& g);
+    Result calculate_min_cost(int node_index, const vector<vector<int>>& trees, const Graph& g);
+    Result calculate_cost(int node_index, const vector<vector<int>>& trees, const vector<int>& indies, const Graph& g);
+
+    static vector<vector<int>> generate_subsets(const vector<int>& indies, int min_num = 2);
+    static vector<vector<int>> generate_subsets_helper(const vector<int>& indies, int num);
 };
 
 

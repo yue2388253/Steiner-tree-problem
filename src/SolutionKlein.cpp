@@ -5,6 +5,7 @@
 #include "SolutionKlein.h"
 #include <vector>
 #include <algorithm>
+#include <boost/graph/dijkstra_shortest_paths.hpp>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ unsigned int SolutionKlein::klein_solution(const Graph& g) {
         vector<int> indies_trees_to_be_merged;
         vector<int> nodes_to_be_added;
         for (int i = 0; i < num_vertex; ++i) {
-            auto r = calculate_cost(i, trees, g);
+            auto r = calculate_min_cost(i, trees, g);
             if (r.cost < cost_min) {
                 indies_trees_to_be_merged.clear();
                 nodes_to_be_added.clear();
@@ -42,7 +43,7 @@ unsigned int SolutionKlein::klein_solution(const Graph& g) {
         assert(indies_trees_to_be_merged.size() > 1);
         sort(indies_trees_to_be_merged.begin(),
              indies_trees_to_be_merged.end(),
-             [](int i, int j){return i > j;});
+             greater<>());
         vector<int>& first_tree = trees[indies_trees_to_be_merged[0]];
         for (int i = indies_trees_to_be_merged.size(); i > 0; --i) {
             int idx = indies_trees_to_be_merged[i];
@@ -60,6 +61,73 @@ unsigned int SolutionKlein::klein_solution(const Graph& g) {
 
 // TODO: Calculate the quotient cost of node |node_index|
 // Note that node |node_index| might be in the trees.
-SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, vector<vector<int>> trees, const Graph& g) {
-    return Result(1, {}, {});
+SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const vector<vector<int>>& trees, const Graph& g) {
+    std::unordered_map<int, int> node2tree_index;
+    for (int i = 0; i < trees.size(); ++i) {
+        for (auto& index: trees[i]) {
+            node2tree_index[index] = i;
+        }
+    }
+
+    vector<int> trees_index(trees.size());
+    for (int i = 0; i < trees.size(); ++i) {
+        trees_index[i] = i;
+    }
+    bool is_in_tree = false;
+    if (node2tree_index.find(node_index) != node2tree_index.end()) {
+        int tree_index = node2tree_index[node_index];
+        trees_index.erase(trees_index.begin() + tree_index);
+        is_in_tree = true;
+    }
+
+    // generate subsets from trees_index
+    vector<vector<int>> subsets_vec;
+    if (is_in_tree) {
+        subsets_vec = SolutionKlein::generate_subsets(trees_index, 1);
+    } else {
+        subsets_vec = SolutionKlein::generate_subsets(trees_index, 2);
+    }
+
+    SolutionKlein::Result res(UINT16_MAX, {}, {});
+    for (auto& indies: subsets_vec) {
+        auto local = calculate_cost(node_index, trees, indies, g);
+        if (local.cost < res.cost) {
+            res = local;
+        }
+    }
+    assert(res.cost != UINT16_MAX);
+
+    return res;
 }
+
+// Note that indies.size() may be 1 since node |node_index| is in trees
+SolutionKlein::Result calculate_cost(int node_index, const vector<vector<int>>& trees, const vector<int>& indies, const Graph& g) {
+
+    return SolutionKlein::Result(1, {}, {});
+}
+
+// TODO: to be optimized. Tip: using dynamic programming can help.
+vector<vector<int>> SolutionKlein::generate_subsets(const vector<int>& indies, int min_num = 2) {
+    vector<vector<int>> res;
+    for (int i = min_num; i <= indies.size(); ++i) {
+         auto r = SolutionKlein::generate_subsets_helper(indies, i);
+         res.insert(res.end(), r.begin(), r.end());
+    }
+    return res;
+}
+
+vector<vector<int>> SolutionKlein::generate_subsets_helper(const vector<int>& indies, int num) {
+    assert(indies.size() >= num);
+    vector<vector<int>> res;
+    if (num == 0)   return res;
+    for (int i = 0; i < indies.size(); ++i) {
+        vector<int> rem(indies.begin()+i+1, indies.end());
+        vector<vector<int>> rem_res = generate_subsets_helper(rem, num-1);
+        for (auto r: rem_res) {
+            r.insert(r.begin(), indies[i]);
+            res.push_back(r);
+        }
+    }
+    return res;
+}
+
