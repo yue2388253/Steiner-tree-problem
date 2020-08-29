@@ -10,11 +10,16 @@
 
 using namespace boost;
 
+// TODO: generate random graph.
+Graph generate_random_graph(int num_nodes, int num_terminals) {
+    Graph g(num_nodes);
+    return g;
+}
+
 Graph create_graph() {
     // Make convenient labels for the vertices
     enum { A, B, C, D, E, N };
     const int num_vertices = N;
-    const char* name = "ABCDE";
     unsigned int vertex_weights[] = {5, 6, 1, 2, 3};
     bool is_terminal[] = {false, true, false, false, true};
     assert(sizeof(vertex_weights) / sizeof(unsigned int) == num_vertices);
@@ -93,8 +98,8 @@ int main(int, char*[])
     access_graph_data(g);
 
     SolutionOpt s_opt;
-    SolutionKlein s_klein;
-    float cost_klein = static_cast<float>(s_klein.klein_solution(g));
+    SolutionKlein s_klein(g);
+    float cost_klein = static_cast<float>(s_klein.klein_solution());
     float cost_opt = static_cast<float>(s_opt.optimal_solution(g));
     if (cost_opt > 0) {
         std::cout << "approximation ratio: " << cost_klein / cost_opt << std::endl;

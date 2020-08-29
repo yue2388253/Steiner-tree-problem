@@ -16,6 +16,8 @@ using namespace std;
 
 class SolutionKlein {
 public:
+    explicit SolutionKlein(const Graph& graph);
+
     struct Result {
         float cost;
         vector<int> trees_to_be_merged;
@@ -25,14 +27,22 @@ public:
                 cost(c), trees_to_be_merged(std::move(t)), new_nodes(std::move(n)) {};
     };
 
-    float klein_solution(const Graph& g);
-    Result calculate_min_cost(int node_index, const vector<vector<int>>& trees, const Graph& g);
+    float klein_solution();
+    Result calculate_min_cost(int node_index, const vector<vector<int>>& trees);
     Result calculate_cost(int node_index, const vector<vector<int>>& trees,
-                          const vector<int>& indies, const Graph& g,
-                          const vector<int>& distance_map, const vector<Vertex>& predecessor);
+                          const vector<int>& indies);
 
     static vector<vector<int>> generate_subsets(const vector<int>& indies, int min_num = 2);
     static vector<vector<int>> generate_subsets_helper(const vector<int>& indies, int num);
+
+private:
+    const Graph& g;
+
+    // distance_map[i][j] represents the distance from i to j (including the cost of j)
+    vector<vector<int>> distance_map;
+
+    // predecessors[i][j] represents rooted from i, the predecessor (parent) of j along the shortest path.
+    vector<vector<Vertex>> predecessors;
 };
 
 template <class PredecessorMap>

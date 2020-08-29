@@ -11,9 +11,25 @@
 
 using namespace std;
 
-float SolutionKlein::klein_solution(const Graph& g) {
+#define MERGE_ADJACENT_TREES
+
+SolutionKlein::SolutionKlein(const Graph &graph): g(graph) {
+    int num_vertex = num_vertices(g);
+    distance_map.resize(num_vertex);
+    predecessors.resize(num_vertex);
+    for (int i = 0; i < num_vertex; ++i) {
+        std::vector<int> d(num_vertex);
+        vector<Vertex> p(num_vertices(g), graph_traits<Graph>::null_vertex()); //the predecessor array
+        dijkstra_shortest_paths(g, i, boost::distance_map(&d[0]).
+                visitor(make_predecessor_recorder(&p[0])));
+        distance_map[i] = std::move(d);
+        predecessors[i] = std::move(p);
+    }
+}
+
+float SolutionKlein::klein_solution() {
     // Initialize the algorithm
-    int num_vertex = g.vertex_set().size();
+    int num_vertex = num_vertices(g);
     vector<vector<int>> trees;
     vector<bool> is_in_trees(num_vertex, false);
     auto v_terminals = get(vertex_terminal_t(), g);
@@ -32,7 +48,7 @@ float SolutionKlein::klein_solution(const Graph& g) {
         vector<int> indies_trees_to_be_merged;
         vector<int> nodes_to_be_added;
         for (int i = 0; i < num_vertex; ++i) {
-            auto r = calculate_min_cost(i, trees, g);
+            auto r = calculate_min_cost(i, trees);
             if (r.cost < cost_min) {
                 cost_min = r.cost;
                 indies_trees_to_be_merged.clear();
@@ -58,13 +74,14 @@ float SolutionKlein::klein_solution(const Graph& g) {
         first_tree.clear();
         first_tree = vector<int>(t.begin(), t.end());
 
+        // TODO: this |cost_min| is the quotient cost of node |node_index|, not the result. Please fix it.
         res += cost_min;
     }
     return res;
 }
 
 // Note that node |node_index| might be in the trees.
-SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const vector<vector<int>>& trees, const Graph& g) {
+SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const vector<vector<int>>& trees) {
     std::unordered_map<int, int> node2tree_index;
     for (int i = 0; i < trees.size(); ++i) {
         for (auto& index: trees[i]) {
@@ -83,8 +100,10 @@ SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const ve
         is_in_tree = true;
     }
 
+#ifdef MERGE_ADJACENT_TREES
     // TODO: should nodes in trees be considered?
     if (is_in_tree) return SolutionKlein::Result{std::numeric_limits<float>::max(), {}, {}};
+#endif
 
     // generate subsets from trees_index
     vector<vector<int>> subsets_vec;
@@ -94,13 +113,9 @@ SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const ve
         subsets_vec = SolutionKlein::generate_subsets(trees_index, 2);
     }
 
-    std::vector<int> d(num_vertices(g));
-    vector<Vertex> p(num_vertices(g), graph_traits<Graph>::null_vertex()); //the predecessor array
-    dijkstra_shortest_paths(g, node_index, distance_map(&d[0]).
-            visitor(make_predecessor_recorder(&p[0])));
     SolutionKlein::Result res(UINT16_MAX, {}, {});
     for (const auto& indies: subsets_vec) {
-        auto local = calculate_cost(node_index, trees, indies, g, d, p);
+        auto local = calculate_cost(node_index, trees, indies);
         if (local.cost < res.cost) {
             res = local;
         }
@@ -113,8 +128,9 @@ SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const ve
 // TODO:
 // Note that indies.size() may be 1 since node |node_index| is in trees
 SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector<vector<int>>& trees,
-                                                    const vector<int>& indies, const Graph& g,
-                                                    const vector<int>& distance_map, const vector<Vertex>& predecessor) {
+                                                    const vector<int>& indies) {
+    std::vector<int> d = this->distance_map[node_index];
+    vector<Vertex> predecessor = this->predecessors[node_index];
     SolutionKlein::Result res(FLOAT_MAX, {}, {});
 
     int num_trees = indies.size();
@@ -126,8 +142,8 @@ SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector
         int& distance = distances[i];
         vector<int>& nodes_to_tree = node_to_be_added[i];
         for (int target_node_index: trees[indies[i]]) {
-            if (distance_map[target_node_index] < distance) {
-                distance = distance_map[target_node_index] - v_weights[target_node_index];
+            if (d[target_node_index] < distance) {
+                distance = d[target_node_index] - v_weights[target_node_index];
 
                 nodes_to_tree.clear();
                 Vertex p = predecessor[target_node_index];
@@ -185,4 +201,3 @@ vector<vector<int>> SolutionKlein::generate_subsets_helper(const vector<int>& in
     }
     return res;
 }
-
