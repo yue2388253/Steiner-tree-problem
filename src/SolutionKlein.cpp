@@ -127,7 +127,7 @@ SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector
         vector<int>& nodes_to_tree = node_to_be_added[i];
         for (int target_node_index: trees[indies[i]]) {
             if (distance_map[target_node_index] < distance) {
-                distance = distance_map[target_node_index];
+                distance = distance_map[target_node_index] - v_weights[target_node_index];
 
                 nodes_to_tree.clear();
                 Vertex p = predecessor[target_node_index];

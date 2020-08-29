@@ -16,20 +16,32 @@ Graph create_graph() {
     const int num_vertices = N;
     const char* name = "ABCDE";
     unsigned int vertex_weights[] = {5, 6, 1, 2, 3};
-    bool is_terminal[] = {false, false, true, true, false};
+    bool is_terminal[] = {false, true, false, false, true};
     assert(sizeof(vertex_weights) / sizeof(unsigned int) == num_vertices);
 
     // writing out the edges in the graph
-    typedef std::pair<int, int> Edge;
-    Edge edge_array[] =
-            { Edge(A,B), Edge(A,D), Edge(C,A), Edge(D,C),
-              Edge(C,E), Edge(B,D), Edge(D,E) };
-    unsigned int edge_weights[] = {1, 2, 1, 2, 7, 3, 1};
-    const int num_edges = sizeof(edge_array)/sizeof(edge_array[0]);
-    assert(num_edges == sizeof(edge_weights) / sizeof(unsigned int));
+    typedef std::pair<int, int> MyEdge;
+    vector<MyEdge> edge_array =
+            { MyEdge(A,B), MyEdge(A,D), MyEdge(C,A), MyEdge(D,C),
+              MyEdge(C,E), MyEdge(B,D), MyEdge(D,E) };
+    vector<unsigned int> edge_weights = {1, 2, 1, 2, 7, 3, 1};
+    const int num_edges = edge_array.size();
+    assert(num_edges == edge_weights.size());
+
+    vector<MyEdge> new_edge_array;
+    vector<unsigned int> new_edge_weights;
+    for (int i = 0; i < num_edges; ++i) {
+        int src = edge_array[i].first;
+        int dst = edge_array[i].second;
+        unsigned int w = edge_weights[i];
+        new_edge_array.emplace_back(MyEdge(src, dst));
+        new_edge_weights.emplace_back(w + vertex_weights[dst]);
+        new_edge_array.emplace_back(MyEdge(dst, src));
+        new_edge_weights.emplace_back(w + vertex_weights[src]);
+    }
 
     // declare a graph object
-    Graph g(edge_array, edge_array + num_edges, edge_weights, num_vertices);
+    Graph g(new_edge_array.begin(), new_edge_array.end(), new_edge_weights.begin(), num_vertices);
 
     property_map<Graph, vertex_weight_t>::type v_weights
             = get(vertex_weight_t(), g);
