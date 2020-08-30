@@ -14,7 +14,7 @@ using namespace std;
 class SolutionBase {
 public:
     explicit SolutionBase(const Graph& g);
-    virtual ~SolutionBase() {};
+    virtual ~SolutionBase() = default;;
     virtual float solution() = 0;
 
     const Graph& g;
@@ -31,7 +31,7 @@ template <class PredecessorMap>
 class recorder : public dijkstra_visitor<>
 {
 public:
-    recorder(PredecessorMap p)
+    explicit recorder(PredecessorMap p)
             : m_predecessor(p) { }
 
     template <class Edge, class Graph>

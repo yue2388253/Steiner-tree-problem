@@ -21,7 +21,10 @@ const int AVG_DEGREE = 2;
 // Generate a random connected graph with |num_nodes| nodes and |num_terminals| terminals.
 std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_terminals) {
     assert(num_nodes >= num_terminals);
-    srand(time(NULL));
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_int_distribution<int> dist(0, INT16_MAX);
     std::shared_ptr<Graph> res(new Graph(num_nodes));
     Graph& g = *res;
 
@@ -33,7 +36,7 @@ std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_ter
 
     vector<unsigned int> vertex_weights(num_nodes, 0);
     for (int i = 0; i < num_nodes; ++i) {
-        vertex_weights[i] = rand() % MAXIMUM_VERTEX_WEIGHT + 1;
+        vertex_weights[i] = dist(mt) % MAXIMUM_VERTEX_WEIGHT + 1;
     }
 
     property_map<Graph, vertex_weight_t>::type v_weights
@@ -53,7 +56,7 @@ std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_ter
     vector<vector<int>> edges(num_nodes, vector<int>(num_nodes, 0));
     auto my_add_edge = [&](int src, int dst) {
         if (edges[src][dst])    return false;
-        unsigned int weight = rand() % MAXIMUM_EDGE_WEIGHT + 1;
+        unsigned int weight = dist(mt) % MAXIMUM_EDGE_WEIGHT + 1;
         add_edge(src, dst, weight + vertex_weights[dst], g);
         add_edge(dst, src, weight + vertex_weights[src], g);
         edges[src][dst] = 1;
@@ -63,7 +66,7 @@ std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_ter
 
     // connect all the nodes together firstly.
     for (int i = 1; i < num_nodes; ++i) {
-        int src = rand() % i;
+        int src = dist(mt) % i;
         int dst = i;
         my_add_edge(src, dst);
         num_edges--;
@@ -71,10 +74,10 @@ std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_ter
 
     // add random edge.
     while (num_edges) {
-        int src = rand() % num_nodes;
+        int src = dist(mt) % num_nodes;
         int dst = -1;
         while (dst == -1 || dst == src) {
-            dst = rand() % num_nodes;
+            dst = dist(mt) % num_nodes;
         }
         bool ok = my_add_edge(src, dst);
         if (ok) num_edges--;
