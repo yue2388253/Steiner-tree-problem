@@ -61,6 +61,7 @@ std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_ter
         return true;
     };
 
+    // connect all the nodes together firstly.
     for (int i = 1; i < num_nodes; ++i) {
         int src = rand() % i;
         int dst = i;
@@ -68,6 +69,7 @@ std::shared_ptr<Graph> GraphGenerator::generate_graph(int num_nodes, int num_ter
         num_edges--;
     }
 
+    // add random edge.
     while (num_edges) {
         int src = rand() % num_nodes;
         int dst = -1;
