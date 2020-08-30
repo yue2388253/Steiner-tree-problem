@@ -123,7 +123,6 @@ SolutionKlein::Result SolutionKlein::calculate_min_quotient_cost(int node_index,
     return res;
 }
 
-// TODO:
 // Note that indies.size() may be 1 since node |node_index| is in trees
 SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector<vector<int>>& trees,
                                                     const vector<int>& indies) {

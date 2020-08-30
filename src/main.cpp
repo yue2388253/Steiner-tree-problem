@@ -37,13 +37,16 @@ void access_graph_data (Graph g) {
     for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
         std::cout << "[(" << index[source(*ei, g)]
                   << "," << index[target(*ei, g)] << ") "
-                  << edge_weights[*ei] << "], ";
+                  << edge_weights[*ei] << "] ";
     std::cout << std::endl;
 }
 
 int main(int, char*[])
 {
-    auto p = create_my_graph();
+    int num_nodes = 10;
+    int num_terminals = 3;
+//    auto p = GraphGenerator::create_my_graph();
+    auto p = GraphGenerator::generate_graph(num_nodes, num_terminals);
     const Graph& g = *p;
 
     // demonstrate how to access the data of the graph and print the graph
@@ -51,8 +54,14 @@ int main(int, char*[])
 
     SolutionOpt s_opt;
     SolutionKlein s_klein(g);
+    cout << "Number of Vertices: " << num_nodes
+         << "\nNumber of terminals: " << num_terminals
+         << "\nNumber of edges: " << num_edges(g)
+         << endl;
     float cost_klein = static_cast<float>(s_klein.klein_solution());
+    cout << "Klein Solution cost: " << cost_klein << endl;
     float cost_opt = static_cast<float>(s_opt.optimal_solution(g));
+    cout << "Klein Solution cost: " << cost_opt << endl;
     if (cost_opt > 0) {
         std::cout << "approximation ratio: " << cost_klein / cost_opt << std::endl;
     }
