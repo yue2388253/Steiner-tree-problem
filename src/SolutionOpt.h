@@ -6,10 +6,12 @@
 #define STEINERTREE_SOLUTIONOPT_H
 
 #include "type_define.h"
+#include "SolutionBase.h"
 
-class SolutionOpt {
+class SolutionOpt: public SolutionBase {
 public:
-    unsigned int optimal_solution(const Graph& g);
+    explicit SolutionOpt(const Graph& g): SolutionBase(g) {};
+    unsigned int optimal_solution();
 };
 
 

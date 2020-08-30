@@ -11,21 +11,8 @@
 
 using namespace std;
 
-#define MERGE_ADJACENT_TREES
-
-SolutionKlein::SolutionKlein(const Graph &graph): g(graph), cost(0) {
-    int num_vertex = num_vertices(g);
-    distance_map.resize(num_vertex);
-    predecessors.resize(num_vertex);
-    for (int i = 0; i < num_vertex; ++i) {
-        std::vector<int> d(num_vertex);
-        vector<Vertex> p(num_vertices(g), graph_traits<Graph>::null_vertex()); //the predecessor array
-        dijkstra_shortest_paths(g, i, boost::distance_map(&d[0]).
-                visitor(make_predecessor_recorder(&p[0])));
-        distance_map[i] = std::move(d);
-        predecessors[i] = std::move(p);
-    }
-}
+// Currently adjacent trees are not merged.
+#define MERGE_ADJACENT_TREES_OFF
 
 float SolutionKlein::klein_solution() {
     // Initialize the algorithm
@@ -98,7 +85,7 @@ SolutionKlein::Result SolutionKlein::calculate_min_quotient_cost(int node_index,
         is_in_tree = true;
     }
 
-#ifdef MERGE_ADJACENT_TREES
+#ifdef MERGE_ADJACENT_TREES_OFF
     // TODO: should nodes in trees be considered?
     if (is_in_tree) return SolutionKlein::Result{std::numeric_limits<float>::max(), {}, {}};
 #endif

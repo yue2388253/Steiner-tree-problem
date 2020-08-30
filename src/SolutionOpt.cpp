@@ -4,7 +4,7 @@
 
 #include "SolutionOpt.h"
 
-unsigned int SolutionOpt::optimal_solution(const Graph& g) {
+unsigned int SolutionOpt::optimal_solution() {
     // TODO:
     return 1;
 }

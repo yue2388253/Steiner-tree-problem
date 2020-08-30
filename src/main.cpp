@@ -52,18 +52,18 @@ int main(int, char*[])
     // demonstrate how to access the data of the graph and print the graph
     access_graph_data(g);
 
-    SolutionOpt s_opt;
+    SolutionOpt s_opt(g);
     SolutionKlein s_klein(g);
-    cout << "Number of Vertices: " << num_nodes
+    cout << "Number of vertices: " << num_nodes
          << "\nNumber of terminals: " << num_terminals
          << "\nNumber of edges: " << num_edges(g)
          << endl;
     float cost_klein = static_cast<float>(s_klein.klein_solution());
     cout << "Klein Solution cost: " << cost_klein << endl;
-    float cost_opt = static_cast<float>(s_opt.optimal_solution(g));
-    cout << "Klein Solution cost: " << cost_opt << endl;
+    float cost_opt = static_cast<float>(s_opt.optimal_solution());
+    cout << "Optimal Solution cost: " << cost_opt << endl;
     if (cost_opt > 0) {
-        std::cout << "approximation ratio: " << cost_klein / cost_opt << std::endl;
+        std::cout << "Approximation ratio: " << cost_klein / cost_opt << std::endl;
     }
 
     return 0;
