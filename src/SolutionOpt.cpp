@@ -4,7 +4,8 @@
 
 #include "SolutionOpt.h"
 
-unsigned int SolutionOpt::optimal_solution() {
+float SolutionOpt::solution() {
     // TODO:
+    assert(num_vertices(g) >= 1);
     return 1;
 }

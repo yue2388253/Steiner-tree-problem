@@ -58,9 +58,9 @@ int main(int, char*[])
          << "\nNumber of terminals: " << num_terminals
          << "\nNumber of edges: " << num_edges(g)
          << endl;
-    float cost_klein = static_cast<float>(s_klein.klein_solution());
+    float cost_klein = static_cast<float>(s_klein.solution());
     cout << "Klein Solution cost: " << cost_klein << endl;
-    float cost_opt = static_cast<float>(s_opt.optimal_solution());
+    float cost_opt = static_cast<float>(s_opt.solution());
     cout << "Optimal Solution cost: " << cost_opt << endl;
     if (cost_opt > 0) {
         std::cout << "Approximation ratio: " << cost_klein / cost_opt << std::endl;

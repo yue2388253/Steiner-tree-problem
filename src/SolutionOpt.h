@@ -11,7 +11,7 @@
 class SolutionOpt: public SolutionBase {
 public:
     explicit SolutionOpt(const Graph& g): SolutionBase(g) {};
-    unsigned int optimal_solution();
+    float solution() override;
 };
 
 

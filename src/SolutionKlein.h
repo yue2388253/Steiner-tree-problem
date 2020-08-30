@@ -28,7 +28,7 @@ public:
                 quotient_cost(c), trees_to_be_merged(std::move(t)), new_nodes(std::move(n)) {};
     };
 
-    float klein_solution();
+    float solution() override;
     Result calculate_min_quotient_cost(int node_index, const vector<vector<int>>& trees);
     Result calculate_cost(int node_index, const vector<vector<int>>& trees,
                           const vector<int>& indies);

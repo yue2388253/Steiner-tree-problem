@@ -14,7 +14,7 @@ using namespace std;
 // Currently adjacent trees are not merged.
 #define MERGE_ADJACENT_TREES_OFF
 
-float SolutionKlein::klein_solution() {
+float SolutionKlein::solution() {
     // Initialize the algorithm
     int num_vertex = num_vertices(g);
     vector<vector<int>> trees;

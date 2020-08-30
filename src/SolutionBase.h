@@ -14,7 +14,8 @@ using namespace std;
 class SolutionBase {
 public:
     explicit SolutionBase(const Graph& g);
-    ~SolutionBase() {};
+    virtual ~SolutionBase() {};
+    virtual float solution() = 0;
 
     const Graph& g;
     float cost;
