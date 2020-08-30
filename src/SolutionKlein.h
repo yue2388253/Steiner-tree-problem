@@ -19,16 +19,16 @@ public:
     explicit SolutionKlein(const Graph& graph);
 
     struct Result {
-        float cost;
+        float quotient_cost;
         vector<int> trees_to_be_merged;
         vector<int> new_nodes;
 
         Result(float c, vector<int> t, vector<int> n):
-                cost(c), trees_to_be_merged(std::move(t)), new_nodes(std::move(n)) {};
+                quotient_cost(c), trees_to_be_merged(std::move(t)), new_nodes(std::move(n)) {};
     };
 
     float klein_solution();
-    Result calculate_min_cost(int node_index, const vector<vector<int>>& trees);
+    Result calculate_min_quotient_cost(int node_index, const vector<vector<int>>& trees);
     Result calculate_cost(int node_index, const vector<vector<int>>& trees,
                           const vector<int>& indies);
 
@@ -37,8 +37,9 @@ public:
 
 private:
     const Graph& g;
+    float cost;
 
-    // distance_map[i][j] represents the distance from i to j (including the cost of j)
+    // distance_map[i][j] represents the distance from i to j (including the quotient_cost of j)
     vector<vector<int>> distance_map;
 
     // predecessors[i][j] represents rooted from i, the predecessor (parent) of j along the shortest path.

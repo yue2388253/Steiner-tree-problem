@@ -14,6 +14,8 @@ using namespace std;
 std::shared_ptr<Graph> generate_graph(int num_nodes, int num_terminals) {
     std::shared_ptr<Graph> res(new Graph(num_nodes));
 
+    // TODO:
+
 
     return res;
 }

@@ -13,7 +13,7 @@ using namespace std;
 
 #define MERGE_ADJACENT_TREES
 
-SolutionKlein::SolutionKlein(const Graph &graph): g(graph) {
+SolutionKlein::SolutionKlein(const Graph &graph): g(graph), cost(0) {
     int num_vertex = num_vertices(g);
     distance_map.resize(num_vertex);
     predecessors.resize(num_vertex);
@@ -42,15 +42,14 @@ float SolutionKlein::klein_solution() {
     }
 
     // start iteration until there is only one tree.
-    float res = 0;
     while (trees.size() != 1) {
-        float cost_min = std::numeric_limits<float>::max();
+        float quotient_cost_min = std::numeric_limits<float>::max();
         vector<int> indies_trees_to_be_merged;
         vector<int> nodes_to_be_added;
         for (int i = 0; i < num_vertex; ++i) {
-            auto r = calculate_min_cost(i, trees);
-            if (r.cost < cost_min) {
-                cost_min = r.cost;
+            auto r = calculate_min_quotient_cost(i, trees);
+            if (r.quotient_cost < quotient_cost_min) {
+                quotient_cost_min = r.quotient_cost;
                 indies_trees_to_be_merged.clear();
                 nodes_to_be_added.clear();
                 indies_trees_to_be_merged = r.trees_to_be_merged;
@@ -74,14 +73,13 @@ float SolutionKlein::klein_solution() {
         first_tree.clear();
         first_tree = vector<int>(t.begin(), t.end());
 
-        // TODO: this |cost_min| is the quotient cost of node |node_index|, not the result. Please fix it.
-        res += cost_min;
+        cost += quotient_cost_min * indies_trees_to_be_merged.size();
     }
-    return res;
+    return cost;
 }
 
 // Note that node |node_index| might be in the trees.
-SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const vector<vector<int>>& trees) {
+SolutionKlein::Result SolutionKlein::calculate_min_quotient_cost(int node_index, const vector<vector<int>>& trees) {
     std::unordered_map<int, int> node2tree_index;
     for (int i = 0; i < trees.size(); ++i) {
         for (auto& index: trees[i]) {
@@ -116,11 +114,11 @@ SolutionKlein::Result SolutionKlein::calculate_min_cost(int node_index, const ve
     SolutionKlein::Result res(UINT16_MAX, {}, {});
     for (const auto& indies: subsets_vec) {
         auto local = calculate_cost(node_index, trees, indies);
-        if (local.cost < res.cost) {
+        if (local.quotient_cost < res.quotient_cost) {
             res = local;
         }
     }
-    assert(res.cost != UINT16_MAX);
+    assert(res.quotient_cost != UINT16_MAX);
 
     return res;
 }
@@ -165,7 +163,7 @@ SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector
     for (int i = 0; i < num_trees; ++i) {
         distances2trees += distances[i];
     }
-    res.cost = static_cast<float>(node_weight + distances2trees) / static_cast<float>(num_trees);
+    res.quotient_cost = static_cast<float>(node_weight + distances2trees) / static_cast<float>(num_trees);
     res.trees_to_be_merged = indies;
     res.new_nodes = vector<int>(nodes_set.begin(), nodes_set.end());
 
