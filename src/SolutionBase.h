@@ -20,6 +20,8 @@ public:
     const Graph& g;
     float cost;
 
+    property_map<Graph, vertex_weight_t>::const_type vertex_weights;
+
     // distance_map[i][j] represents the distance from i to j (including the quotient_cost of j)
     vector<vector<int>> distance_map;
 

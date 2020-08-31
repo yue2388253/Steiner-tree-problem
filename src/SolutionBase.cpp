@@ -19,4 +19,6 @@ SolutionBase::SolutionBase(const Graph& graph): g(graph), cost(0) {
         distance_map[i] = std::move(d);
         predecessors[i] = std::move(p);
     }
+
+    vertex_weights = get(vertex_weight_t(), g);
 }

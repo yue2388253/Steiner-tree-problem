@@ -118,8 +118,7 @@ SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector
     SolutionKlein::Result res(FLOAT_MAX, {}, {});
 
     int num_trees = indies.size();
-    auto v_weights = get(vertex_weight_t(), g);
-    unsigned int node_weight = v_weights[node_index];
+    unsigned int node_weight = vertex_weights[node_index];
     vector<int> distances(num_trees, UINT16_MAX);
     vector<vector<int>> node_to_be_added(num_trees);
     for (int i = 0; i < num_trees; ++i) {
@@ -127,7 +126,7 @@ SolutionKlein::Result SolutionKlein::calculate_cost(int node_index, const vector
         vector<int>& nodes_to_tree = node_to_be_added[i];
         for (int target_node_index: trees[indies[i]]) {
             if (d[target_node_index] < distance) {
-                distance = d[target_node_index] - v_weights[target_node_index];
+                distance = d[target_node_index] - vertex_weights[target_node_index];
 
                 nodes_to_tree.clear();
                 Vertex p = predecessor[target_node_index];
